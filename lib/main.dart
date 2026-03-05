@@ -39,7 +39,7 @@ class _TopLeagueAppState extends State<TopLeagueApp> {
   @override
   void initState() {
     super.initState();
-    apiService = ApiService(baseUrl: 'http://localhost:8080/api');
+    apiService = ApiService(baseUrl: 'https://topleague.onrender.com/api');
     authRepository = AuthRepository(apiService);
     authProvider = AuthProvider(authRepository)..checkLoginStatus();
 
