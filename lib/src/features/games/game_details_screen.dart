@@ -1,4 +1,4 @@
-43import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/dto/game_dto.dart';
 import '../../models/dto/participation_dto.dart';
