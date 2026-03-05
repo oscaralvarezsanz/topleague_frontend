@@ -91997,7 +91997,7 @@ ad(){return new A.a_y()}}
 A.a_y.prototype={
 ar(){var s,r,q=this,p=null,o="/leagues"
 q.aM()
-s=A.aQu("http://localhost:8080/api")
+s=A.aQu("https://topleague.onrender.com/api")
 q.d!==$&&A.aU()
 q.d=s
 s=new A.Lh(s)
