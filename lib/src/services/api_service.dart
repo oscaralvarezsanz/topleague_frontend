@@ -21,7 +21,12 @@ class ApiService {
           final token = prefs.getString('token');
 
           if (token != null && token.isNotEmpty) {
+            print('🔑 ApiService: Adding Authorization header (Bearer token).');
             options.headers['Authorization'] = 'Bearer $token';
+          } else {
+            print(
+              '⚠️ ApiService: No token found. Sending request without Authorization header.',
+            );
           }
 
           return handler.next(options);
