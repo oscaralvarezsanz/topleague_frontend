@@ -25,7 +25,7 @@ jobs:
         # IMPORTANT: If your GitHub repository is named differently than 'football_frontend', 
         # you MUST update the --base-href value below to match your repository name.
         # It should be in the format: "/<your_repo_name>/"
-        run: flutter build web --base-href "/football_frontend/"
+        run: flutter build web --base-href "/topleague_frontend/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
