@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter/foundation.dart';
+
 import 'src/services/api_service.dart';
 import 'src/features/leagues/data/leagues_repository.dart';
 import 'src/features/teams/data/teams_repository.dart';
@@ -39,7 +41,10 @@ class _TopLeagueAppState extends State<TopLeagueApp> {
   @override
   void initState() {
     super.initState();
-    apiService = ApiService(baseUrl: 'https://topleague.onrender.com/api');
+    final baseUrl = kDebugMode
+        ? 'http://localhost:8080/api'
+        : 'https://topleague.onrender.com/api';
+    apiService = ApiService(baseUrl: baseUrl);
     authRepository = AuthRepository(apiService);
     authProvider = AuthProvider(authRepository)..checkLoginStatus();
 
