@@ -1,0 +1,809 @@
+openapi: 3.1.0
+info:
+  title: Topleague API
+  version: 1.0.0
+servers:
+  - url: '/api'
+paths:
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUserRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/UserCreatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The user ID
+    get:
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUserRequest'
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      responses:
+        '204':
+          description: User deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /leagues:
+    get:
+      summary: Get leagues for the authenticated user
+      description: Returns all leagues where the authenticated user is admin or registered as a player.
+      responses:
+        '200':
+          description: List of leagues for the authenticated user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeagueResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeagueRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/LeagueCreatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /leagues/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The league ID
+    get:
+      responses:
+        '200':
+          $ref: '#/components/responses/LeagueResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeagueRequest'
+      responses:
+        '200':
+          description: Updated league
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      responses:
+        '204':
+          description: League deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /leagues/{id}/teams:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The league ID
+    get:
+      summary: Get all teams for a league
+      responses:
+        '200':
+          description: List of teams in the league
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /leagues/{id}/games:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The league ID
+    get:
+      summary: Get games for a league with semantic filters
+      description: >
+        Returns games ordered by date ascending.
+        - `?date=2026-02-23` — games for a specific date.
+        - `?matchday=5` — games for a specific matchday/round.
+        - No params — returns games for the current week (Monday to Sunday).
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+            example: "2026-02-23"
+          required: false
+          description: Filter by exact date
+        - in: query
+          name: matchday
+          schema:
+            type: integer
+            example: 5
+          required: false
+          description: Filter by matchday/round number
+      responses:
+        '200':
+          description: List of games matching the filter, ordered by date ascending
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /teams:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/TeamCreatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /teams/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The team ID
+    get:
+      responses:
+        '200':
+          $ref: '#/components/responses/TeamResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+      responses:
+        '200':
+          description: Updated team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      responses:
+        '204':
+          description: Team deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /teams/{id}/players:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The team ID
+    get:
+      summary: Get all players for a team
+      responses:
+        '200':
+          description: List of players in the team
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /players:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/PlayerCreatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /players/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The player ID
+    get:
+      responses:
+        '200':
+          $ref: '#/components/responses/PlayerResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+      responses:
+        '200':
+          description: Updated player
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      responses:
+        '204':
+          description: Player deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /games:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/GameCreatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /games/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The game ID
+    get:
+      responses:
+        '200':
+          $ref: '#/components/responses/GameResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+      responses:
+        '200':
+          description: Updated game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      responses:
+        '204':
+          description: Game deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /participations:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipationRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/ParticipationCreatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /participations/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: The participation ID
+    get:
+      responses:
+        '200':
+          $ref: '#/components/responses/ParticipationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipationRequest'
+      responses:
+        '200':
+          description: Updated participation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      responses:
+        '204':
+          description: Deleted participation
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+  /auth/login:
+    post:
+      summary: Authenticate a user
+      operationId: authenticateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+        '403':
+          description: Invalid credentials
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized access to the API
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UserResponse:
+      description: App user information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppUserResponse'
+    LeagueResponse:
+      description: League information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LeagueResponse'
+    TeamResponse:
+      description: Team information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TeamResponse'
+    PlayerResponse:
+      description: Player information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlayerResponse'
+    GameResponse:
+      description: Game information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GameResponse'
+    ParticipationResponse:
+      description: Participation information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ParticipationResponse'
+    UserCreatedResponse:
+      description: Created user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppUserResponse'
+    LeagueCreatedResponse:
+      description: Created league
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LeagueResponse'
+    TeamCreatedResponse:
+      description: Created team
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TeamResponse'
+    PlayerCreatedResponse:
+      description: Created player
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlayerResponse'
+    GameCreatedResponse:
+      description: Created game
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GameResponse'
+    ParticipationCreatedResponse:
+      description: Created participation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ParticipationResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "TL_GENERIC_ERROR"
+        description:
+          type: string
+          example: "Generic Error"
+    AppUserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "john_doe"
+    AppUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "john_doe"
+        password:
+          type: string
+          example: password
+    LeagueResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: "Premier League"
+        adminId:
+          type: integer
+          example: 1
+    LeagueRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Premier League"
+    TeamResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        leagueId:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: "Red Dragons"
+        gamesPlayed:
+          type: integer
+          example: 2
+        points:
+          type: integer
+          example: 3
+    TeamRequest:
+      type: object
+      properties:
+        leagueId:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: "Red Dragons"
+        gamesPlayed:
+          type: integer
+          example: 2
+        points:
+          type: integer
+          example: 3
+    PlayerResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 501
+        userId:
+          type: integer
+          nullable: true
+          example: 1
+        leagueId:
+          type: integer
+          example: 10
+        teamId:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: "John"
+        surname:
+          type: string
+          example: "Doe"
+        position:
+          type: string
+          example: "Forward"
+        jerseyNumber:
+          type: integer
+          example: 9
+    PlayerRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "john_doe"
+        leagueId:
+          type: integer
+          example: 10
+        teamId:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: "John"
+        surname:
+          type: string
+          example: "Doe"
+        position:
+          type: string
+          example: "Forward"
+        jerseyNumber:
+          type: integer
+          example: 9
+    GameResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        leagueId:
+          type: integer
+          example: 10
+        awayTeamId:
+          type: integer
+          example: 102
+        homeTeamId:
+          type: integer
+          example: 101
+        awayScore:
+          type: integer
+          example: 2
+        homeScore:
+          type: integer
+          example: 3
+        date:
+          type: string
+          format: date
+          example: "2026-02-23"
+        matchday:
+          type: integer
+          example: 5
+    GameRequest:
+      type: object
+      properties:
+        leagueId:
+          type: integer
+          example: 10
+        awayTeamId:
+          type: integer
+          example: 102
+        homeTeamId:
+          type: integer
+          example: 101
+        awayScore:
+          type: integer
+          example: 2
+        homeScore:
+          type: integer
+          example: 3
+        date:
+          type: string
+          format: date
+          example: "2026-02-23"
+        matchday:
+          type: integer
+          example: 5
+    ParticipationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2001
+        playerId:
+          type: integer
+          example: 1002
+        gameId:
+          type: integer
+          example: 1001
+        goals:
+          type: integer
+          example: 1
+        assists:
+          type: integer
+          example: 0
+        yellowCards:
+          type: integer
+          example: 1
+        redCards:
+          type: integer
+          example: 0
+        starter:
+          type: boolean
+          example: true
+    ParticipationRequest:
+      type: object
+      properties:
+        gameId:
+          type: integer
+          example: 1001
+        playerId:
+          type: integer
+          example: 1002
+        goals:
+          type: integer
+          example: 1
+        assists:
+          type: integer
+          example: 0
+        yellowCards:
+          type: integer
+          example: 1
+        redCards:
+          type: integer
+          example: 0
+        starter:
+          type: boolean
+          example: true
+    PlayerStatsResponse:
+      type: object
+      properties:
+        playerId:
+          type: integer
+          example: 501
+        totalGoals:
+          type: integer
+          example: 12
+        totalAssists:
+          type: integer
+          example: 5
+        totalYellowCards:
+          type: integer
+          example: 3
+        totalRedCards:
+          type: integer
+          example: 1
+        totalGamesPlayed:
+          type: integer
+          example: 20
+        totalGamesStarted:
+          type: integer
+          example: 18
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AuthenticationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AuthenticationResponse:
+      type: object
+      properties:
+        token:
+          type: string
